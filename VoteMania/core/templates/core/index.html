@@ -1,0 +1,294 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VoteMania - Онлайн Голосование</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'core/css/styles.css' %}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+</head>
+<body>
+    <!-- Навигационная панель -->
+    <nav class="navbar navbar-expand-lg navbar-light sticky-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="{% url 'home' %}">
+                <i class="fas fa-vote-yea me-2"></i>VoteMania
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'home' %}">Главная</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#how-it-works">Как это работает</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#features">Возможности</a>
+                    </li>
+                </ul>
+
+                <div class="d-flex">
+                    <a href="#" class="btn btn-outline-primary me-2">
+                        <i class="fas fa-user me-1"></i> Регистрация
+                    </a>
+                    <a href="#" class="btn btn-primary">
+                        <i class="fas fa-sign-in-alt me-1"></i> Войти
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Герой секция -->
+    <section class="hero-section">
+        <div class="container">
+            <h1 class="display-3 fw-bold mb-4">Простое онлайн голосование</h1>
+            <p class="lead mb-5" style="font-size: 1.5rem;">
+                Создавайте голосования, участвуйте в опросах и принимайте решения вместе с сообществом
+            </p>
+
+            <div class="d-flex justify-content-center gap-3 flex-wrap">
+                <a href="#" class="btn btn-primary-custom btn-lg pulse">
+                    <i class="fas fa-plus-circle me-2"></i>Создать голосование
+                </a>
+                <a href="#how-it-works" class="btn btn-light btn-lg">
+                    <i class="fas fa-info-circle me-2"></i>Как это работает
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Статистика -->
+    <section class="py-5">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-md-3">
+                    <div class="stats-card text-center p-4">
+                        <i class="fas fa-users fa-2x mb-3" style="color: #6f42c1;"></i>
+                        <h3 class="mb-0">10,000+</h3>
+                        <p class="mb-0">Активных пользователей</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stats-card text-center p-4">
+                        <i class="fas fa-poll fa-2x mb-3" style="color: #007bff;"></i>
+                        <h3 class="mb-0">5,000+</h3>
+                        <p class="mb-0">Голосований создано</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stats-card text-center p-4">
+                        <i class="fas fa-vote-yea fa-2x mb-3" style="color: #28a745;"></i>
+                        <h3 class="mb-0">100,000+</h3>
+                        <p class="mb-0">Голосов отдано</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stats-card text-center p-4">
+                        <i class="fas fa-globe fa-2x mb-3" style="color: #ffc107;"></i>
+                        <h3 class="mb-0">50+</h3>
+                        <p class="mb-0">Стран использования</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Как это работает -->
+    <section id="how-it-works" class="py-5 bg-light">
+        <div class="container">
+            <h2 class="text-center mb-5 fw-bold">Как это работает</h2>
+
+            <div class="row g-4">
+                <div class="col-md-3">
+                    <div class="how-it-works-step">
+                        <div class="step-number">1</div>
+                        <i class="fas fa-user-plus fa-3x mb-3" style="color: #6f42c1;"></i>
+                        <h4>Регистрация</h4>
+                        <p>Создайте аккаунт или войдите в существующий</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="how-it-works-step">
+                        <div class="step-number">2</div>
+                        <i class="fas fa-plus-circle fa-3x mb-3" style="color: #007bff;"></i>
+                        <h4>Создание</h4>
+                        <p>Создайте голосование с вариантами ответов</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="how-it-works-step">
+                        <div class="step-number">3</div>
+                        <i class="fas fa-share-alt fa-3x mb-3" style="color: #28a745;"></i>
+                        <h4>Распространение</h4>
+                        <p>Поделитесь ссылкой с друзьями и коллегами</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="how-it-works-step">
+                        <div class="step-number">4</div>
+                        <i class="fas fa-chart-bar fa-3x mb-3" style="color: #ffc107;"></i>
+                        <h4>Результаты</h4>
+                        <p>Получите мгновенные результаты и аналитику</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Возможности -->
+    <section id="features" class="py-5">
+        <div class="container">
+            <h2 class="text-center mb-5 fw-bold text-white">Наши возможности</h2>
+
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="card feature-card">
+                        <div class="card-body text-center p-4">
+                            <i class="fas fa-shield-alt fa-3x mb-3" style="color: #6f42c1;"></i>
+                            <h4 class="card-title">Безопасность</h4>
+                            <p class="card-text">Защита от фальсификаций и анонимное голосование</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card feature-card">
+                        <div class="card-body text-center p-4">
+                            <i class="fas fa-bolt fa-3x mb-3" style="color: #007bff;"></i>
+                            <h4 class="card-title">Быстрота</h4>
+                            <p class="card-text">Создание голосования за пару минут</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card feature-card">
+                        <div class="card-body text-center p-4">
+                            <i class="fas fa-mobile-alt fa-3x mb-3" style="color: #28a745;"></i>
+                            <h4 class="card-title">Мобильность</h4>
+                            <p class="card-text">Полностью адаптивный дизайн для всех устройств</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card feature-card">
+                        <div class="card-body text-center p-4">
+                            <i class="fas fa-chart-pie fa-3x mb-3" style="color: #ffc107;"></i>
+                            <h4 class="card-title">Аналитика</h4>
+                            <p class="card-text">Детальная статистика и графики результатов</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card feature-card">
+                        <div class="card-body text-center p-4">
+                            <i class="fas fa-users fa-3x mb-3" style="color: #e83e8c;"></i>
+                            <h4 class="card-title">Сообщество</h4>
+                            <p class="card-text">Общие голосования и обсуждения</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card feature-card">
+                        <div class="card-body text-center p-4">
+                            <i class="fas fa-infinity fa-3x mb-3" style="color: #17a2b8;"></i>
+                            <h4 class="card-title">Бесплатно</h4>
+                            <p class="card-text">Базовые функции абсолютно бесплатны</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Кнопки создания событий -->
+    <section class="py-5 bg-light">
+        <div class="container text-center">
+            <h2 class="mb-4 fw-bold">Начните прямо сейчас</h2>
+            <p class="lead mb-5">Создайте свое первое голосование за считанные минуты</p>
+
+            <div class="row justify-content-center g-3">
+                <div class="col-md-3">
+                    <a href="#" class="btn btn-primary-custom btn-lg w-100">
+                        <i class="fas fa-poll me-2"></i>Опрос
+                    </a>
+                </div>
+                <div class="col-md-3">
+                    <a href="#" class="btn btn-secondary-custom btn-lg w-100">
+                        <i class="fas fa-vote-yea me-2"></i>Выборы
+                    </a>
+                </div>
+                <div class="col-md-3">
+                    <a href="#" class="btn btn-success btn-lg w-100">
+                        <i class="fas fa-star me-2"></i>Рейтинг
+                    </a>
+                </div>
+                <div class="col-md-3">
+                    <a href="#" class="btn btn-warning btn-lg w-100 text-white">
+                        <i class="fas fa-plus me-2"></i>Другое
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Футер -->
+    <footer class="footer py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-4 mb-md-0">
+                    <h4 class="mb-4">VoteMania</h4>
+                    <p>Платформа для простого и безопасного онлайн голосования</p>
+                    <div class="d-flex gap-3">
+                        <a href="#" class="text-white"><i class="fab fa-vk fa-2x"></i></a>
+                        <a href="#" class="text-white"><i class="fab fa-telegram fa-2x"></i></a>
+                        <a href="#" class="text-white"><i class="fab fa-twitter fa-2x"></i></a>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4 mb-md-0">
+                    <h4 class="mb-4">Быстрые ссылки</h4>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="#" class="text-white text-decoration-none">О нас</a></li>
+                        <li class="mb-2"><a href="#" class="text-white text-decoration-none">Помощь</a></li>
+                        <li class="mb-2"><a href="#" class="text-white text-decoration-none">Контакты</a></li>
+                        <li class="mb-2"><a href="#" class="text-white text-decoration-none">Политика конфиденциальности</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h4 class="mb-4">Контакты</h4>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><i class="fas fa-envelope me-2"></i> support@votemania.ru</li>
+                        <li class="mb-2"><i class="fas fa-phone me-2"></i> +7 (XXX) XXX-XX-XX</li>
+                        <li class="mb-2"><i class="fas fa-map-marker-alt me-2"></i> Москва, Россия</li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="my-4" style="background: rgba(255, 255, 255, 0.1);">
+            <div class="text-center">
+                <p class="mb-0">&copy; 2025 VoteMania. Все права защищены.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Плавная прокрутка для якорных ссылок
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+</html>

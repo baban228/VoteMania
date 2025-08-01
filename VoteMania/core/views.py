@@ -4,8 +4,8 @@ from django.http import HttpResponseNotFound
 
 
 def index(request):
-    return render(request, "Core/index.html")
+    return render(request, "core/index.html")
 
 
 def page_not_found(request, exception):
-    return render(request, "Not_Found/index.html")
+    return render(request, "Not_Found/index.html", status=404)

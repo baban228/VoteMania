@@ -1,0 +1,141 @@
+:root {
+    --primary: #1e3a8a;      /* Темно-синий */
+    --secondary: #3b82f6;    /* Синий */
+    --accent: #60a5fa;       /* Светло-синий */
+    --light: #f1f5f9;
+    --dark: #0f172a;
+    --text: #1e293b;
+    --text-light: #f1f5f9;
+}
+
+body {
+    background: linear-gradient(135deg, #1e40af 0%, #0ea5e9 100%);
+    min-height: 100vh;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.navbar {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-brand {
+    color: var(--primary) !important;
+    font-weight: bold;
+}
+
+.navbar-nav .nav-link {
+    color: var(--text) !important;
+    font-weight: 500;
+}
+
+.navbar-nav .nav-link:hover {
+    color: var(--primary) !important;
+}
+
+.hero-section {
+    padding: 4rem 0;
+    text-align: center;
+    color: white;
+}
+
+.hero-section h1 {
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.hero-section p {
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.feature-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: none;
+    border-radius: 15px;
+    overflow: hidden;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.95);
+}
+
+.feature-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+}
+
+.btn-custom {
+    border-radius: 50px;
+    padding: 12px 30px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-primary-custom {
+    background: var(--primary);
+    border: none;
+    color: white;
+}
+
+.btn-primary-custom:hover {
+    background: #152a5e;
+    transform: scale(1.05);
+    color: white;
+}
+
+.btn-outline-custom {
+    background: transparent;
+    border: 2px solid white;
+    color: white;
+}
+
+.btn-outline-custom:hover {
+    background: white;
+    color: var(--primary);
+    transform: scale(1.05);
+}
+
+.stats-card {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+}
+
+.how-it-works-step {
+    text-align: center;
+    padding: 2rem;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    height: 100%;
+}
+
+.step-number {
+    width: 50px;
+    height: 50px;
+    background: var(--primary);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.5rem;
+    margin: 0 auto 1rem;
+}
+
+.footer {
+    background: rgba(15, 23, 42, 0.95);
+    color: white;
+    backdrop-filter: blur(10px);
+}
+
+.pulse {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}

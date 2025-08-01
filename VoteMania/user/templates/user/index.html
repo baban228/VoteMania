@@ -1,0 +1,542 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Профиль - VoteMania</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --secondary: #3b82f6;
+            --accent: #60a5fa;
+            --light: #f1f5f9;
+            --dark: #0f172a;
+            --text: #1e293b;
+            --text-light: #f1f5f9;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1e40af 0%, #0ea5e9 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .profile-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            padding: 2rem;
+            margin: 2rem 0;
+            backdrop-filter: blur(10px);
+        }
+
+        .profile-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .avatar-container {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+
+        .profile-avatar {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 5px solid white;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .avatar-badge {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+        }
+
+        .profile-info h1 {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .profile-stats {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin: 1.5rem 0;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text);
+        }
+
+        .profile-section {
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            color: var(--primary);
+            border-bottom: 2px solid var(--accent);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .friend-card {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            border-radius: 15px;
+            background: white;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            margin-bottom: 1rem;
+        }
+
+        .friend-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .friend-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 1rem;
+        }
+
+        .friend-info {
+            flex: 1;
+        }
+
+        .friend-name {
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 0.2rem;
+        }
+
+        .friend-status {
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+
+        .online {
+            color: #10b981;
+        }
+
+        .offline {
+            color: #94a3b8;
+        }
+
+        .voting-card {
+            border-radius: 15px;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+            background: white;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        .voting-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .voting-image {
+            height: 150px;
+            object-fit: cover;
+        }
+
+        .voting-content {
+            padding: 1.5rem;
+        }
+
+        .voting-title {
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 0.5rem;
+        }
+
+        .voting-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: #64748b;
+            margin-bottom: 1rem;
+        }
+
+        .btn-custom {
+            border-radius: 50px;
+            padding: 8px 20px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary-custom {
+            background: var(--primary);
+            border: none;
+            color: white;
+        }
+
+        .btn-primary-custom:hover {
+            background: #152a5e;
+            color: white;
+        }
+
+        .btn-outline-custom {
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-outline-custom:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .nav-tabs .nav-link {
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        .nav-tabs .nav-link.active {
+            color: var(--primary);
+            border-bottom: 3px solid var(--primary);
+        }
+
+        .badge-custom {
+            background: var(--primary);
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .profile-stats {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .profile-avatar {
+                width: 120px;
+                height: 120px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Навигационная панель -->
+    <nav class="navbar navbar-expand-lg navbar-light sticky-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="{% url 'home' %}">
+                <i class="fas fa-vote-yea me-2"></i>VoteMania
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'home' %}">Главная</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'voting' %}">Голосования</a>
+                    </li>
+                </ul>
+
+                <div class="d-flex">
+                    <a href="{% url 'user' %}" class="btn btn-primary me-2">
+                        <i class="fas fa-user me-1"></i> Профиль
+                    </a>
+                    <a href="{% url 'logout' %}" class="btn btn-outline-primary">
+                        <i class="fas fa-sign-out-alt me-1"></i> Выйти
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="profile-container">
+            <!-- Шапка профиля -->
+            <div class="profile-header">
+                <div class="avatar-container">
+                    <img src="{% static 'images/default-avatar.png' %}" alt="Аватар" class="profile-avatar">
+                    <div class="avatar-badge">
+                        <i class="fas fa-crown"></i>
+                    </div>
+                </div>
+
+                <div class="profile-info">
+                    <h1>{{ user.username }}</h1>
+                    <p class="text-muted">@{{ user.username }} • Онлайн</p>
+
+                    <div class="profile-stats">
+                        <div class="stat-item">
+                            <div class="stat-number">24</div>
+                            <div class="stat-label">Голосований</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">156</div>
+                            <div class="stat-label">Друзей</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">1.2K</div>
+                            <div class="stat-label">Голосов</div>
+                        </div>
+                    </div>
+
+                    <div class="mt-3">
+                        <button class="btn btn-primary-custom btn-custom me-2">
+                            <i class="fas fa-edit me-1"></i> Редактировать профиль
+                        </button>
+                        <button class="btn btn-outline-custom btn-custom">
+                            <i class="fas fa-cog me-1"></i> Настройки
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Вкладки -->
+            <ul class="nav nav-tabs mb-4">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#votings" data-bs-toggle="tab">
+                        <i class="fas fa-poll me-1"></i> Мои голосования
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#friends" data-bs-toggle="tab">
+                        <i class="fas fa-users me-1"></i> Друзья
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#activity" data-bs-toggle="tab">
+                        <i class="fas fa-history me-1"></i> Активность
+                    </a>
+                </li>
+            </ul>
+
+            <!-- Содержимое вкладок -->
+            <div class="tab-content">
+                <!-- Мои голосования -->
+                <div class="tab-pane fade show active" id="votings">
+                    <div class="profile-section">
+                        <h3 class="section-title">Мои голосования</h3>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="voting-card">
+                                    <img src="{% static 'images/voting1.jpg' %}" alt="Голосование" class="voting-image w-100">
+                                    <div class="voting-content">
+                                        <h4 class="voting-title">Лучший фильм 2025 года</h4>
+                                        <div class="voting-meta">
+                                            <span><i class="fas fa-users me-1"></i> 42 участника</span>
+                                            <span><i class="fas fa-clock me-1"></i> 3 дня осталось</span>
+                                        </div>
+                                        <p>Голосование за лучший фильм этого года. Участвуют все новинки кинопроката.</p>
+                                        <div class="d-flex justify-content-between">
+                                            <span class="badge badge-custom">Активно</span>
+                                            <div>
+                                                <button class="btn btn-sm btn-outline-custom me-2">
+                                                    <i class="fas fa-share me-1"></i> Поделиться
+                                                </button>
+                                                <button class="btn btn-sm btn-primary-custom">
+                                                    <i class="fas fa-chart-bar me-1"></i> Результаты
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="voting-card">
+                                    <img src="{% static 'images/voting2.jpg' %}" alt="Голосование" class="voting-image w-100">
+                                    <div class="voting-content">
+                                        <h4 class="voting-title">Куда поехать на выходные?</h4>
+                                        <div class="voting-meta">
+                                            <span><i class="fas fa-users me-1"></i> 18 участников</span>
+                                            <span><i class="fas fa-clock me-1"></i> Завершено</span>
+                                        </div>
+                                        <p>Выбираем место для поездки на ближайшие выходные. Все предложения рассмотрим!</p>
+                                        <div class="d-flex justify-content-between">
+                                            <span class="badge bg-secondary">Завершено</span>
+                                            <div>
+                                                <button class="btn btn-sm btn-outline-custom me-2">
+                                                    <i class="fas fa-share me-1"></i> Поделиться
+                                                </button>
+                                                <button class="btn btn-sm btn-primary-custom">
+                                                    <i class="fas fa-chart-bar me-1"></i> Результаты
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="text-center mt-4">
+                            <button class="btn btn-primary-custom btn-custom">
+                                <i class="fas fa-plus-circle me-2"></i>Создать новое голосование
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Друзья -->
+                <div class="tab-pane fade" id="friends">
+                    <div class="profile-section">
+                        <h3 class="section-title">Мои друзья</h3>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="friend-card">
+                                    <img src="{% static 'images/friend1.jpg' %}" alt="Друг" class="friend-avatar">
+                                    <div class="friend-info">
+                                        <div class="friend-name">Александр Петров</div>
+                                        <div class="friend-status online"><i class="fas fa-circle me-1"></i> Онлайн</div>
+                                    </div>
+                                    <div>
+                                        <button class="btn btn-sm btn-outline-custom">
+                                            <i class="fas fa-comment"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="friend-card">
+                                    <img src="{% static 'images/friend2.jpg' %}" alt="Друг" class="friend-avatar">
+                                    <div class="friend-info">
+                                        <div class="friend-name">Мария Иванова</div>
+                                        <div class="friend-status online"><i class="fas fa-circle me-1"></i> Онлайн</div>
+                                    </div>
+                                    <div>
+                                        <button class="btn btn-sm btn-outline-custom">
+                                            <i class="fas fa-comment"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="friend-card">
+                                    <img src="{% static 'images/friend3.jpg' %}" alt="Друг" class="friend-avatar">
+                                    <div class="friend-info">
+                                        <div class="friend-name">Дмитрий Сидоров</div>
+                                        <div class="friend-status offline"><i class="fas fa-circle me-1"></i> Был 2 часа назад</div>
+                                    </div>
+                                    <div>
+                                        <button class="btn btn-sm btn-outline-custom">
+                                            <i class="fas fa-comment"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="friend-card">
+                                    <img src="{% static 'images/friend4.jpg' %}" alt="Друг" class="friend-avatar">
+                                    <div class="friend-info">
+                                        <div class="friend-name">Елена Козлова</div>
+                                        <div class="friend-status offline"><i class="fas fa-circle me-1"></i> Была вчера</div>
+                                    </div>
+                                    <div>
+                                        <button class="btn btn-sm btn-outline-custom">
+                                            <i class="fas fa-comment"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="text-center mt-4">
+                            <button class="btn btn-primary-custom btn-custom">
+                                <i class="fas fa-user-plus me-2"></i>Добавить друзей
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Активность -->
+                <div class="tab-pane fade" id="activity">
+                    <div class="profile-section">
+                        <h3 class="section-title">Последняя активность</h3>
+
+                        <div class="list-group">
+                            <div class="list-group-item border-0 mb-3" style="background: white; border-radius: 15px; box-shadow: 0 3px 10px rgba(0,0,0,0.08);">
+                                <div class="d-flex">
+                                    <div class="me-3">
+                                        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                            <i class="fas fa-poll"></i>
+                                        </div>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <h5 class="mb-1">Создано голосование</h5>
+                                        <p class="mb-1">Вы создали голосование "Лучший фильм 2025 года"</p>
+                                        <small class="text-muted">2 часа назад</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="list-group-item border-0 mb-3" style="background: white; border-radius: 15px; box-shadow: 0 3px 10px rgba(0,0,0,0.08);">
+                                <div class="d-flex">
+                                    <div class="me-3">
+                                        <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                            <i class="fas fa-vote-yea"></i>
+                                        </div>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <h5 class="mb-1">Проголосовали</h5>
+                                        <p class="mb-1">Вы проголосовали в голосовании "Куда поехать на выходные?"</p>
+                                        <small class="text-muted">5 часов назад</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="list-group-item border-0 mb-3" style="background: white; border-radius: 15px; box-shadow: 0 3px 10px rgba(0,0,0,0.08);">
+                                <div class="d-flex">
+                                    <div class="me-3">
+                                        <div class="bg-info text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                            <i class="fas fa-user-plus"></i>
+                                        </div>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <h5 class="mb-1">Новый друг</h5>
+                                        <p class="mb-1">Александр Петров стал вашим другом</p>
+                                        <small class="text-muted">1 день назад</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

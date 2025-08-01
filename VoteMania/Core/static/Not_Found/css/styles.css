@@ -1,0 +1,112 @@
+:root {
+    --primary: #1e3a8a;      /* Темно-синий */
+    --secondary: #3b82f6;    /* Синий */
+    --accent: #60a5fa;       /* Светло-синий */
+    --light: #f1f5f9;
+    --dark: #0f172a;
+    --text: #1e293b;
+    --text-light: #f1f5f9;
+}
+
+body {
+    background: linear-gradient(135deg, #1e40af 0%, #0ea5e9 100%);
+    min-height: 100vh;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.error-container {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    padding: 3rem;
+    text-align: center;
+    max-width: 600px;
+    margin: 2rem;
+    backdrop-filter: blur(10px);
+}
+
+.error-code {
+    font-size: 8rem;
+    font-weight: 800;
+    color: var(--primary);
+    margin: 0;
+    line-height: 1;
+    text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.1);
+}
+
+.error-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--dark);
+    margin: 1rem 0;
+}
+
+.error-message {
+    font-size: 1.2rem;
+    color: var(--text);
+    margin-bottom: 2rem;
+    line-height: 1.6;
+}
+
+.btn-custom {
+    border-radius: 50px;
+    padding: 12px 30px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-primary-custom {
+    background: var(--primary);
+    border: none;
+    color: white;
+}
+
+.btn-primary-custom:hover {
+    background: #152a5e;
+    transform: scale(1.05);
+    color: white;
+}
+
+.btn-outline-custom {
+    background: transparent;
+    border: 2px solid var(--primary);
+    color: var(--primary);
+    margin-left: 1rem;
+}
+
+.btn-outline-custom:hover {
+    background: var(--primary);
+    color: white;
+    transform: scale(1.05);
+}
+
+.astronaut {
+    font-size: 5rem;
+    margin-bottom: 1rem;
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+    100% { transform: translateY(0px); }
+}
+
+@media (max-width: 768px) {
+    .error-code {
+        font-size: 6rem;
+    }
+
+    .error-title {
+        font-size: 2rem;
+    }
+
+    .error-container {
+        padding: 2rem;
+    }
+}
