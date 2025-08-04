@@ -1,0 +1,22 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Django servec start",
+            "justMyCode": false,
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/VoteMania/manage.py",
+            "python": "${workspaceFolder}/venv/bin/python",
+            "args": [
+                "runserver",
+                //"--noreload",
+                //"0.0.0.0:8001",
+            ],
+            "django": true
+        }
+    ]
+}
