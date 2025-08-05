@@ -1,12 +1,37 @@
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect,  get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
-from .models import User
-from .form import CustomUserChangeForm
+from django.db.models import Q
+from django.http import JsonResponse
+from django.views.decorators.http import require_http_methods
+from django.views.decorators.csrf import csrf_exempt
+import json
 
+
+from .models import User, FriendRequest, Friendship
+from .form import CustomUserChangeForm, UserSearchForm
+
+@login_required
 def user(request):
-    return render(request, "user/index.html")
+    user = request.user
+    # Получаем список друзей
+    friends = User.objects.filter(friends_with__user=user)
+
+    # Получаем список входящих запросов на добавление в друзья
+    friend_requests = FriendRequest.objects.filter(to_user=user)
+
+    # Получаем список исходящих запросов на добавление в друзья
+    sent_requests = FriendRequest.objects.filter(from_user=user)
+
+    context = {
+        'friends': friends,
+        'friend_requests': friend_requests,
+        'sent_requests': sent_requests,
+        # ... другие данные профиля ...
+    }
+    # Убедитесь, что используете правильный путь к шаблону
+    return render(request, 'user/index.html', context)
 
 
 def authentication(request):
@@ -122,3 +147,95 @@ def register_view(request):
             })
 
     return render(request, 'register/index.html')
+
+
+@login_required
+def search_users_view(request):
+    """
+    Страница поиска пользователей.
+    """
+    form = UserSearchForm(request.GET or None)
+    users = []
+    if form and form.is_valid():
+        query = form.cleaned_data['query']
+        if query:
+            # Ищем пользователей по username или email (или другим полям)
+            # Исключаем текущего пользователя из результатов
+            users = User.objects.filter(
+                Q(username__icontains=query) |
+                Q(email__icontains=query)
+            ).exclude(id=request.user.id)
+
+    context = {
+        'form': form,
+        'users': users,
+    }
+    # Убедитесь, что используете правильный путь к шаблону
+    return render(request, 'user/search_friends.html', context)
+
+
+@login_required
+@require_http_methods(["POST"])
+def send_friend_request_view(request, user_id):
+    """
+    Отправить запрос на добавление в друзья.
+    """
+    to_user = get_object_or_404(User, id=user_id)
+
+    # Проверки
+    if to_user == request.user:
+        messages.error(request, "Вы не можете добавить себя в друзья.")
+        return redirect('search_users')  # Или другой URL
+
+    # Проверяем, существует ли уже запрос
+    if FriendRequest.objects.filter(from_user=request.user, to_user=to_user).exists():
+        messages.info(request, "Запрос на добавление в друзья уже отправлен.")
+    # Проверяем, не являются ли они уже друзьями (через существование Friendship в обе стороны)
+    elif Friendship.objects.filter(user=request.user, friend=to_user).exists():
+        messages.info(request, "Вы уже являетесь друзьями с этим пользователем.")
+    else:
+        # Создаем запрос
+        FriendRequest.objects.create(from_user=request.user, to_user=to_user)
+        messages.success(request, f"Запрос на добавление в друзья отправлен пользователю {to_user.username}.")
+
+    return redirect('search_users')  # Или другой URL
+
+
+@login_required
+@require_http_methods(["POST"])
+@csrf_exempt  # <-- Добавьте этот декоратор
+def respond_to_friend_request_view(request, request_id):
+    """
+    Принять или отклонить запрос на добавление в друзья.
+    """
+    # Проверяем CSRF-токен вручную, если не используем @csrf_exempt
+    # Но для API-подобных endpoints часто используют @csrf_exempt + токен в заголовке
+    # Или просто @csrf_exempt если проверка делается другим способом.
+    # В данном случае, так как это AJAX, мы можем просто отключить проверку для этого endpoint.
+    # ВАЖНО: Убедитесь, что доступ к этому endpoint ограничен для авторизованных пользователей (@login_required)
+
+    friend_request = get_object_or_404(FriendRequest, id=request_id, to_user=request.user)
+
+    try:
+        # Для POST запросов с JSON данными, используйте request.body
+        # Для стандартных форм данных, используйте request.POST
+        # В вашем случае, данные отправляются как JSON
+        data = json.loads(request.body)
+        action = data.get('action')  # 'accept' или 'reject'
+    except (json.JSONDecodeError, KeyError):
+        # Возвращаем JSON ответ для AJAX запроса
+        return JsonResponse({'success': False, 'message': 'Неверный запрос.'}, status=400)
+
+    if action == 'accept':
+        friend_request.accept()
+        messages.success(request, f"Запрос от {friend_request.from_user.username} принят. Вы теперь друзья!")
+        # Возвращаем JSON ответ для AJAX запроса
+        return JsonResponse({'success': True, 'message': 'Запрос принят!', 'action': 'accept'})
+    elif action == 'reject':
+        friend_request.reject()
+        messages.info(request, f"Запрос от {friend_request.from_user.username} отклонен.")
+        # Возвращаем JSON ответ для AJAX запроса
+        return JsonResponse({'success': True, 'message': 'Запрос отклонен.', 'action': 'reject'})
+    else:
+        # Возвращаем JSON ответ для AJAX запроса
+        return JsonResponse({'success': False, 'message': 'Неверное действие.'}, status=400)

@@ -1,0 +1,213 @@
+{% load static %}
+{% load friendship_extras %}
+
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Поиск друзей - VoteMania</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --secondary: #3b82f6;
+            --accent: #60a5fa;
+            --light: #f1f5f9;
+            --dark: #0f172a;
+            --text: #1e293b;
+            --text-light: #f1f5f9;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1e40af 0%, #0ea5e9 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .search-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            padding: 2rem;
+            margin: 2rem 0;
+            backdrop-filter: blur(10px);
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .btn-custom {
+            border-radius: 50px;
+            padding: 8px 20px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary-custom {
+            background: var(--primary);
+            border: none;
+            color: white;
+        }
+
+        .btn-primary-custom:hover {
+            background: #152a5e;
+            color: white;
+        }
+
+        .search-result-card {
+            border-radius: 15px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+            background: white;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        .search-result-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .user-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Навигационная панель (скопируйте из вашего основного шаблона) -->
+    <nav class="navbar navbar-expand-lg navbar-light sticky-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="{% url 'home' %}">
+                <i class="fas fa-vote-yea me-2"></i>VoteMania
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'home' %}">Главная</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'voting' %}">Голосования</a>
+                    </li>
+                </ul>
+                <div class="d-flex">
+                    <!-- Пример навигации для аутентифицированного пользователя -->
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'user' %}" class="btn btn-primary me-2">
+                            <i class="fas fa-user me-1"></i> Профиль
+                        </a>
+                        <a href="{% url 'logout' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-sign-out-alt me-1"></i> Выйти
+                        </a>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="btn btn-primary me-2">
+                            <i class="fas fa-sign-in-alt me-1"></i> Войти
+                        </a>
+                        <a href="{% url 'register' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-user-plus me-1"></i> Регистрация
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="search-container">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="fw-bold text-primary">
+                    <i class="fas fa-search me-2"></i>Поиск друзей
+                </h1>
+                <a href="{% url 'user' %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-1"></i> Назад в профиль
+                </a>
+            </div>
+
+            <!-- Отображение сообщений -->
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <!-- Форма поиска -->
+            <form method="get" class="mb-4">
+                <div class="row">
+                    <div class="col-md-10">
+                        <label for="{{ form.query.id_for_label }}" class="form-label">Поиск пользователей</label>
+                        {{ form.query }}
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary-custom btn-custom w-100">
+                            <i class="fas fa-search me-1"></i> Найти
+                        </button>
+                    </div>
+                </div>
+            </form>
+
+            <!-- Результаты поиска -->
+            {% if users %}
+                <h3 class="mb-3">Результаты поиска</h3>
+                <div class="list-group">
+                    {% for user_result in users %}
+                        <div class="list-group-item search-result-card">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="d-flex align-items-center">
+                                    {% if user_result.avatar and user_result.avatar.url %}
+                                        <img src="{{ user_result.avatar.url }}" alt="Аватар {{ user_result.username }}" class="user-avatar">
+                                    {% else %}
+                                        <img src="{% static 'user/image/default.png' %}" alt="Аватар {{ user_result.username }}" class="user-avatar">
+                                    {% endif %}
+                                    <div>
+                                        <div class="fw-bold">{{ user_result.username }}</div>
+                                        <div class="text-muted">{{ user_result.email }}</div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <!-- Проверяем, не отправлен ли уже запрос и не являются ли они друзьями -->
+                                    {% if user_result.id != user.id %} <!-- Исключаем себя -->
+                                        {% if not user_result|is_friend:user %} <!-- Пользовательская фильтрация, см. ниже -->
+                                            {% if not user_result|has_sent_request:user %} <!-- Пользовательская фильтрация, см. ниже -->
+                                                <form method="post" action="{% url 'send_friend_request' user_result.id %}" style="display: inline;">
+                                                    {% csrf_token %}
+                                                    <button type="submit" class="btn btn-primary-custom btn-custom">
+                                                        <i class="fas fa-user-plus me-1"></i> Добавить в друзья
+                                                    </button>
+                                                </form>
+                                            {% else %}
+                                                <span class="badge bg-secondary">Запрос отправлен</span>
+                                            {% endif %}
+                                        {% else %}
+                                            <span class="badge bg-success">Уже друзья</span>
+                                        {% endif %}
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% elif form.is_valid %}
+                <div class="text-center py-5">
+                    <p class="text-muted">Пользователи не найдены. Попробуйте другой запрос.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

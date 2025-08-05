@@ -18,3 +18,16 @@ class CustomUserChangeForm(UserChangeForm):
         super().__init__(*args, **kwargs)
         if 'password' in self.fields:
             del self.fields['password']
+
+
+class UserSearchForm(forms.Form):
+    query = forms.CharField(
+        max_length=150,
+        widget=forms.TextInput(
+            attrs={
+                'class': 'form-control',
+                'placeholder': 'Введите имя пользователя или email...'
+            }
+        ),
+        label="Поиск пользователей"
+    )
