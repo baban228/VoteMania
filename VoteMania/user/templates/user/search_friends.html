@@ -8,79 +8,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Поиск друзей - VoteMania</title>
+     <link rel="stylesheet" type="text/css" href="{% static 'search_friends/css/styles.css' %}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        :root {
-            --primary: #1e3a8a;
-            --secondary: #3b82f6;
-            --accent: #60a5fa;
-            --light: #f1f5f9;
-            --dark: #0f172a;
-            --text: #1e293b;
-            --text-light: #f1f5f9;
-        }
-
-        body {
-            background: linear-gradient(135deg, #1e40af 0%, #0ea5e9 100%);
-            min-height: 100vh;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        .search-container {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-            padding: 2rem;
-            margin: 2rem 0;
-            backdrop-filter: blur(10px);
-        }
-
-        .form-label {
-            font-weight: 600;
-            color: var(--primary);
-        }
-
-        .btn-custom {
-            border-radius: 50px;
-            padding: 8px 20px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-        .btn-primary-custom {
-            background: var(--primary);
-            border: none;
-            color: white;
-        }
-
-        .btn-primary-custom:hover {
-            background: #152a5e;
-            color: white;
-        }
-
-        .search-result-card {
-            border-radius: 15px;
-            overflow: hidden;
-            margin-bottom: 1rem;
-            background: white;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
-            transition: all 0.3s ease;
-        }
-
-        .search-result-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .user-avatar {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            object-fit: cover;
-            margin-right: 1rem;
-        }
-    </style>
 </head>
 <body>
     <!-- Навигационная панель (скопируйте из вашего основного шаблона) -->
