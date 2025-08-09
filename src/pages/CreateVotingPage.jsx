@@ -3,6 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import FriendSelector from '../components/FriendSelector';
 import CreateVotingForm from '../components/CreateVotingForm';
 
+const STORAGE_KEY = 'votemania_votings';
+
 // TODO: В будущем заменить на реальные данные из API
 // Моковые данные друзей для демонстрации
 const mockFriends = [
@@ -37,34 +39,21 @@ function CreateVotingPage() {
   }, []);
 
   const handleSubmit = async (formData) => {
-    // TODO: Заменить на реальный API вызов
-    // try {
-    //   const response = await fetch('/api/votings/', {
-    //     method: 'POST',
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //       // Добавьте токен авторизации, если требуется
-    //       // 'Authorization': `Bearer ${token}`
-    //     },
-    //     body: JSON.stringify(formData)
-    //   });
-    //
-    //   if (response.ok) {
-    //     const newVoting = await response.json();
-    //     // Перенаправляем на страницу созданного голосования или на список
-    //     navigate(`/vote/${newVoting.id}`); // или navigate('/');
-    //   } else {
-    //     // Обработка ошибок
-    //     const errorData = await response.json();
-    //     throw new Error(errorData.message || 'Ошибка при создании голосования');
-    //   }
-    // } catch (err) {
-    //   setError(err.message);
-    // }
-
-    // Для демонстрации просто покажем alert и перейдем на главную
-    alert('Голосование создано! (Демонстрация)');
-    navigate('/');
+    // Сохраняем голосование в localStorage
+    const newVoting = {
+      id: Date.now(),
+      title: formData.title,
+      description: formData.description,
+      participantsCount: 0,
+      daysLeft: 7,
+      status: 'active',
+      imageUrl: '',
+    };
+    const stored = localStorage.getItem(STORAGE_KEY);
+    const votings = stored ? JSON.parse(stored) : [];
+    votings.unshift(newVoting); // Новые голосования впереди
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(votings));
+    navigate('/'); // Без alert
   };
 
   if (loading) {
@@ -90,18 +79,17 @@ function CreateVotingPage() {
   }
 
   return (
-    <div className="container py-4">
-      <div className="d-flex justify-content-between align-items-center mb-4">
+    <div className="container py-4" style={{display: 'flex', flexDirection: 'column', alignItems: 'center', minHeight: '80vh'}}>
+      <div className="d-flex justify-content-between align-items-center mb-4" style={{width: '100%', maxWidth: 700}}>
         <h1 className="h3 fw-bold">Создать голосование</h1>
         <Link to="/" className="btn btn-outline-secondary">
           <i className="fas fa-arrow-left me-1"></i> Назад
         </Link>
       </div>
-
-      <div className="row justify-content-center">
-        <div className="col-lg-8">
-          <div className="card">
-            <div className="card-body">
+      <div style={{width: '100%', maxWidth: 700, display: 'flex', justifyContent: 'center'}}>
+        <div style={{width: '100%'}}>
+          <div className="card" style={{padding: 0, boxShadow: 'var(--shadow)', borderRadius: 'var(--radius)', border: '1px solid var(--border)', width: '100%'}}>
+            <div className="card-body" style={{padding: 0}}>
               <CreateVotingForm
                 friends={friends}
                 onSubmit={handleSubmit}

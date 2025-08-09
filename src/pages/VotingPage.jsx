@@ -2,28 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import VotingCard from '../components/VotingCard';
 
-// TODO: В будущем заменить на реальные данные из API
-// Моковые данные для демонстрации
-const mockVotings = [
-  // {
-  //   id: 1,
-  //   title: "Лучший фильм 2025 года",
-  //   description: "Голосование за лучший фильм этого года. Участвуют все новинки кинопроката.",
-  //   participantsCount: 42,
-  //   daysLeft: 3,
-  //   status: "active", // или "completed"
-  //   imageUrl: "/images/voting1.jpg" // Путь к изображению
-  // },
-  // {
-  //   id: 2,
-  //   title: "Куда поехать на выходные?",
-  //   description: "Выбираем место для поездки на ближайшие выходные.",
-  //   participantsCount: 18,
-  //   daysLeft: 1,
-  //   status: "active",
-  //   imageUrl: "/images/voting2.jpg"
-  // }
-];
+const STORAGE_KEY = 'votemania_votings';
 
 function VotingPage() {
   const [votings, setVotings] = useState([]);
@@ -31,22 +10,11 @@ function VotingPage() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    // TODO: Заменить на реальный API вызов
-    // fetchVotings()
-    //   .then(data => {
-    //     setVotings(data);
-    //     setLoading(false);
-    //   })
-    //   .catch(err => {
-    //     setError(err.message);
-    //     setLoading(false);
-    //   });
-
-    // Пока используем моковые данные
-    setTimeout(() => {
-      setVotings(mockVotings);
-      setLoading(false);
-    }, 500); // Имитация загрузки
+    // Получаем голосования из localStorage
+    const stored = localStorage.getItem(STORAGE_KEY);
+    const loaded = stored ? JSON.parse(stored) : [];
+    setVotings(loaded);
+    setLoading(false);
   }, []);
 
   if (loading) {
@@ -75,11 +43,7 @@ function VotingPage() {
     <div className="container py-4">
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h1 className="h3 fw-bold">Мои голосования</h1>
-        <Link to="/create" className="btn btn-primary">
-          <i className="fas fa-plus-circle me-2"></i>Создать новое голосование
-        </Link>
       </div>
-
       {votings.length > 0 ? (
         <div className="row">
           {votings.map(voting => (

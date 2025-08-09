@@ -1,52 +1,55 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function VotingCard({ voting }) {
-  // Определяем статус для бейджа
-  const getStatusBadge = (status) => {
-    if (status === 'completed') {
-      return <span className="badge bg-secondary">Завершено</span>;
-    }
-    return <span className="badge badge-custom">Активно</span>;
+  const [open, setOpen] = useState(false);
+  const navigate = useNavigate();
+  const shortTitle =
+    voting.title.length > 8
+      ? voting.title.slice(0, 8) + '…'
+      : voting.title;
+
+  const handleView = (e) => {
+    e.stopPropagation();
+    setOpen(false);
+    navigate(`/vote/${voting.id}`);
   };
 
   return (
-    <div className="voting-card">
-      {voting.imageUrl && (
-        <img
-          src={voting.imageUrl}
-          alt={voting.title}
-          className="voting-image w-100"
-        />
-      )}
-      <div className="voting-content">
-        <h4 className="voting-title">{voting.title}</h4>
-        <div className="voting-meta">
-          <span><i className="fas fa-users me-1"></i> {voting.participantsCount} участника</span>
-          {voting.daysLeft !== undefined && (
-            <span><i className="fas fa-clock me-1"></i> {voting.daysLeft} дня осталось</span>
-          )}
-        </div>
-        <p>{voting.description}</p>
-        <div className="d-flex justify-content-between align-items-center">
-          {getStatusBadge(voting.status)}
-          <div>
-            <button className="btn btn-sm btn-outline-custom me-2">
-              <i className="fas fa-share me-1"></i> Поделиться
+    <>
+      <div
+        className="voting-card voting-card-square fade-in"
+        tabIndex={0}
+        onClick={() => setOpen(true)}
+        style={{ outline: open ? '2px solid var(--primary)' : 'none' }}
+      >
+        <div className="voting-card-title">{shortTitle}</div>
+      </div>
+      {open && (
+        <div className="voting-modal-overlay" onClick={() => setOpen(false)}>
+          <div className="voting-modal" onClick={(e) => e.stopPropagation()}>
+            <button
+              className="voting-modal-close"
+              onClick={() => setOpen(false)}
+              title="Закрыть"
+            >
+              ×
             </button>
-            {voting.status === 'completed' ? (
-              <button className="btn btn-sm btn-primary-custom">
-                <i className="fas fa-chart-bar me-1"></i> Результаты
-              </button>
-            ) : (
-              <Link to={`/vote/${voting.id}`} className="btn btn-sm btn-primary-custom">
-                <i className="fas fa-vote-yea me-1"></i> Голосовать
-              </Link>
-            )}
+            <div className="voting-modal-title">{voting.title}</div>
+            <div className="voting-modal-desc">
+              {voting.description || 'Нет описания'}
+            </div>
+            <button
+              className="btn btn-primary"
+              style={{ marginTop: 16, minWidth: 120 }}
+              onClick={handleView}
+            >
+              Просмотр
+            </button>
           </div>
         </div>
-      </div>
-    </div>
+      )}
+    </>
   );
 }
 

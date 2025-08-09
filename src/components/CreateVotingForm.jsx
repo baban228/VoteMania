@@ -64,9 +64,21 @@ function CreateVotingForm({ friends, onSubmit }) {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div className="mb-3">
-        <label htmlFor="title" className="form-label">Название голосования *</label>
+    <form className="create-voting-form" style={{
+      maxWidth: '600px',
+      margin: '0 auto',
+      background: 'var(--card-bg)',
+      borderRadius: 'var(--radius)',
+      boxShadow: 'var(--shadow)',
+      padding: '40px 32px',
+      minWidth: '320px',
+      width: '100%',
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '22px',
+    }} onSubmit={handleSubmit}>
+      <div className="mb-3" style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+        <label htmlFor="title" className="form-label" style={{fontWeight: 600, color: 'var(--primary-dark)'}}>Название голосования *</label>
         <input
           type="text"
           className={`form-control ${errors.title ? 'is-invalid' : ''}`}
@@ -75,20 +87,22 @@ function CreateVotingForm({ friends, onSubmit }) {
           value={formData.title}
           onChange={handleChange}
           placeholder="Введите название голосования"
+          style={{border: '1.5px solid var(--border)', borderRadius: 'var(--radius)', padding: '12px', fontSize: '1.08rem', background: '#f8fafc'}}
         />
-        {errors.title && <div className="invalid-feedback">{errors.title}</div>}
+        {errors.title && <div className="invalid-feedback" style={{color: '#e53e3e'}}>{errors.title}</div>}
       </div>
 
-      <div className="mb-3">
-        <label htmlFor="description" className="form-label">Описание</label>
+      <div className="mb-3" style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+        <label htmlFor="description" className="form-label" style={{fontWeight: 600, color: 'var(--primary-dark)'}}>Описание</label>
         <textarea
           className="form-control"
           id="description"
           name="description"
-          rows="3"
+          rows="4"
           value={formData.description}
           onChange={handleChange}
           placeholder="Опишите суть голосования"
+          style={{resize: 'vertical', border: '1.5px solid var(--border)', borderRadius: 'var(--radius)', padding: '12px', fontSize: '1.08rem', background: '#f8fafc'}}
         ></textarea>
       </div>
 
@@ -137,10 +151,11 @@ function CreateVotingForm({ friends, onSubmit }) {
       </div>
       */}
 
-      <div className="d-flex justify-content-between">
+      <div className="d-flex justify-content-between" style={{gap: 12, marginTop: 12}}>
         <button
           type="button"
           className="btn btn-outline-secondary"
+          style={{minWidth: 120, borderRadius: 'var(--radius)', fontWeight: 500}}
           onClick={() => window.history.back()}
         >
           Отмена
@@ -148,6 +163,7 @@ function CreateVotingForm({ friends, onSubmit }) {
         <button
           type="submit"
           className="btn btn-primary"
+          style={{minWidth: 180, borderRadius: 'var(--radius)', fontWeight: 600, background: 'var(--primary)', border: 'none'}}
           disabled={isSubmitting}
         >
           {isSubmitting ? (
