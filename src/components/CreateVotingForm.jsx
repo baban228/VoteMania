@@ -5,9 +5,9 @@ function CreateVotingForm({ friends, onSubmit }) {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    // selectedFriends: [], // Для выбора участников
-    // deadline: '', // Дата окончания
-    // location: '' // Ссылка на Яндекс.Карты
+    deadline: '', // Новое поле
+    // selectedFriends: [],
+    // location: ''
   });
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -41,11 +41,9 @@ function CreateVotingForm({ friends, onSubmit }) {
     if (!formData.title.trim()) {
       newErrors.title = 'Название голосования обязательно';
     }
-
-    // Можно добавить другие проверки:
-    // if (!formData.deadline) {
-    //   newErrors.deadline = 'Укажите дату окончания';
-    // }
+    if (!formData.deadline) {
+      newErrors.deadline = 'Укажите дату и время окончания';
+    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -106,22 +104,9 @@ function CreateVotingForm({ friends, onSubmit }) {
         ></textarea>
       </div>
 
-      {/* Выбор друзей (если нужно) */}
-      {/* 
-      <div className="mb-3">
-        <label className="form-label">Пригласить друзей</label>
-        <FriendSelector
-          friends={friends}
-          selectedFriends={formData.selectedFriends || []}
-          onChange={handleFriendsChange}
-        />
-      </div>
-      */}
-
-      {/* Дата окончания (если нужно) */}
-      {/* 
-      <div className="mb-3">
-        <label htmlFor="deadline" className="form-label">Дата окончания</label>
+      {/* Новое поле: дата и время окончания */}
+      <div className="mb-3" style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+        <label htmlFor="deadline" className="form-label" style={{fontWeight: 600, color: 'var(--primary-dark)'}}>Дата и время окончания *</label>
         <input
           type="datetime-local"
           className={`form-control ${errors.deadline ? 'is-invalid' : ''}`}
@@ -129,27 +114,10 @@ function CreateVotingForm({ friends, onSubmit }) {
           name="deadline"
           value={formData.deadline}
           onChange={handleChange}
+          style={{border: '1.5px solid var(--border)', borderRadius: 'var(--radius)', padding: '12px', fontSize: '1.08rem', background: '#f8fafc'}}
         />
-        {errors.deadline && <div className="invalid-feedback">{errors.deadline}</div>}
+        {errors.deadline && <div className="invalid-feedback" style={{color: '#e53e3e'}}>{errors.deadline}</div>}
       </div>
-      */}
-
-      {/* Ссылка на Яндекс.Карты (если нужно) */}
-      {/* 
-      <div className="mb-3">
-        <label htmlFor="location" className="form-label">Место встречи (ссылка на Яндекс.Карты)</label>
-        <input
-          type="url"
-          className="form-control"
-          id="location"
-          name="location"
-          value={formData.location}
-          onChange={handleChange}
-          placeholder="https://yandex.ru/maps/..."
-        />
-        <div className="form-text">Вставьте ссылку на место встречи из Яндекс.Карт</div>
-      </div>
-      */}
 
       <div className="d-flex justify-content-between" style={{gap: 12, marginTop: 12}}>
         <button

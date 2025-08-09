@@ -13,7 +13,23 @@ function VotingPage() {
     // Получаем голосования из localStorage
     const stored = localStorage.getItem(STORAGE_KEY);
     const loaded = stored ? JSON.parse(stored) : [];
-    setVotings(loaded);
+    // Сортировка: сначала активные, потом завершённые
+    const now = Date.now();
+    const active = [];
+    const finished = [];
+    for (const v of loaded) {
+      if (v.deadline) {
+        const deadline = new Date(v.deadline).getTime();
+        if (deadline > now) {
+          active.push(v);
+        } else {
+          finished.push(v);
+        }
+      } else {
+        active.push(v);
+      }
+    }
+    setVotings([...active, ...finished]);
     setLoading(false);
   }, []);
 
@@ -48,7 +64,11 @@ function VotingPage() {
         <div className="row">
           {votings.map(voting => (
             <div className="col-md-6 mb-4" key={voting.id}>
-              <VotingCard voting={voting} />
+              <VotingCard voting={voting} onDelete={id => {
+                const updated = votings.filter(v => v.id !== id);
+                setVotings(updated);
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+              }} />
             </div>
           ))}
         </div>

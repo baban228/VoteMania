@@ -44,6 +44,7 @@ function CreateVotingPage() {
       id: Date.now(),
       title: formData.title,
       description: formData.description,
+      deadline: formData.deadline, // сохраняем дату окончания
       participantsCount: 0,
       daysLeft: 7,
       status: 'active',
