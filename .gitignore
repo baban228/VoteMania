@@ -1,4 +1,8 @@
+
 # venv ignoring
 venv/
 # pycache ignoring
 **/__pycache__
+
+node_modules
+
