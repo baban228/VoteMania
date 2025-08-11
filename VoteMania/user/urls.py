@@ -9,6 +9,7 @@ urlpatterns = [
     path('friend-request/respond/<int:request_id>/', views.respond_to_friend_request_view, name='respond_to_friend_request'),
     path('register/', views.register_view, name='register'),
     path('authentication/', views.authentication, name='authentication'),
-    path('logout/', views.logout_view, name='logout')
+    path('logout/', views.logout_view, name='logout'),
+    path('api/current/', views.current_user_api, name='current_user_api')
 ]
 

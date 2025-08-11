@@ -239,3 +239,13 @@ def respond_to_friend_request_view(request, request_id):
     else:
         # Возвращаем JSON ответ для AJAX запроса
         return JsonResponse({'success': False, 'message': 'Неверное действие.'}, status=400)
+
+
+@login_required
+def current_user_api(request):
+    user = request.user
+    return JsonResponse({
+        'username': user.username,
+        'email': user.email,
+        'avatar': user.avatar.url if user.avatar else None
+    })
