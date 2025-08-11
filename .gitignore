@@ -1,1 +1,6 @@
-node_modules
+# npm modules ignorin
+node_modules/
+# venv ignoring
+venv/
+# pycache ignoring
+**/__pycache__/
