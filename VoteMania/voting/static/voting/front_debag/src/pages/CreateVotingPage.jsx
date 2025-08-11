@@ -3,8 +3,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import FriendSelector from '../components/FriendSelector';
 import CreateVotingForm from '../components/CreateVotingForm';
 
-const STORAGE_KEY = 'votemania_votings';
-
 // TODO: В будущем заменить на реальные данные из API
 // Моковые данные друзей для демонстрации
 const mockFriends = [
@@ -39,22 +37,26 @@ function CreateVotingPage() {
   }, []);
 
   const handleSubmit = async (formData) => {
-    // Сохраняем голосование в localStorage
-    const newVoting = {
-      id: Date.now(),
-      title: formData.title,
-      description: formData.description,
-      deadline: formData.deadline, // сохраняем дату окончания
-      participantsCount: 0,
-      daysLeft: 7,
-      status: 'active',
-      imageUrl: '',
-    };
-    const stored = localStorage.getItem(STORAGE_KEY);
-    const votings = stored ? JSON.parse(stored) : [];
-    votings.unshift(newVoting); // Новые голосования впереди
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(votings));
-    navigate('/'); // Без alert
+    try {
+      const response = await fetch('/voting/api/votings/', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify({
+          title: formData.title,
+          description: formData.description,
+          deadline: formData.deadline,
+          participants: formData.selectedFriends || [],
+        }),
+      });
+      if (!response.ok) throw new Error('Ошибка создания голосования');
+      navigate('/');
+    } catch (err) {
+      alert(err.message || 'Ошибка');
+    }
   };
 
   if (loading) {

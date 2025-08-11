@@ -1,20 +1,10 @@
-import React, { useState, useMemo } from 'react';
-import { useParams, useLocation } from 'react-router-dom';
+import React, { useState, useEffect, useMemo } from 'react';
+import { useParams, useLocation, useNavigate } from 'react-router-dom';
 
-const STORAGE_KEY = 'votemania_votings';
-
-const mockFriends = [
-  { id: 1, username: 'Александр', avatar: '' },
-  { id: 2, username: 'Мария', avatar: '' },
-  { id: 3, username: 'Дмитрий', avatar: '' },
-];
-
-// Получить основной цвет из градиента (первый цвет)
 function getMainColorFromGradient(gradient) {
   const match = gradient.match(/#([0-9a-fA-F]{6})/);
   return match ? `#${match[1]}` : '#fff';
 }
-// Определить, светлый ли цвет (для выбора цвета текста)
 function isColorLight(hex) {
   if (!hex.startsWith('#') || hex.length !== 7) return true;
   const r = parseInt(hex.substr(1,2),16);
@@ -26,24 +16,38 @@ function isColorLight(hex) {
 function VotingPageDetail() {
   const { id } = useParams();
   const location = useLocation();
+  const navigate = useNavigate();
+  const [voting, setVoting] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [showAddFriends, setShowAddFriends] = useState(false);
-  // Получаем голосование по id
-  const stored = localStorage.getItem(STORAGE_KEY);
-  const votings = stored ? JSON.parse(stored) : [];
-  const voting = votings.find(v => String(v.id) === String(id));
-  // Ссылки теперь хранятся как массив объектов с url, чтобы не зависеть от currentLink
   const [links, setLinks] = useState([]);
   const [linkInput, setLinkInput] = useState('');
   const [currentLink, setCurrentLink] = useState(0);
 
-  // Получаем градиент из state, если он был передан
+  useEffect(() => {
+    fetch(`/voting/api/votings/${id}/`, {
+      credentials: 'include',
+      headers: { 'Accept': 'application/json' },
+    })
+      .then(res => res.ok ? res.json() : Promise.reject(res.statusText))
+      .then(data => {
+        setVoting(data.voting || null);
+        setLinks(data.voting && data.voting.links ? data.voting.links : []);
+        setLoading(false);
+      })
+      .catch(err => {
+        setError(err.toString());
+        setLoading(false);
+      });
+  }, [id]);
+
   const gradient = location.state?.gradient || 'linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%)';
   const mainColor = useMemo(() => getMainColorFromGradient(gradient), [gradient]);
   const isLight = useMemo(() => isColorLight(mainColor), [mainColor]);
   const textColor = isLight ? '#222' : '#fff';
   const textShadow = isLight ? '0 2px 8px rgba(255,255,255,0.25)' : '0 2px 8px rgba(0,0,0,0.25)';
 
-  // Таймер до окончания голосования
   const [now, setNow] = useState(Date.now());
   React.useEffect(() => {
     const timer = setInterval(() => setNow(Date.now()), 1000);
@@ -68,7 +72,7 @@ function VotingPageDetail() {
     if (linkInput.trim()) {
       setLinks(prev => {
         const newLinks = [...prev, { url: linkInput.trim() }];
-        setCurrentLink(newLinks.length - 1); // Переключаемся на новую ссылку корректно
+        setCurrentLink(newLinks.length - 1);
         return newLinks;
       });
       setLinkInput('');
@@ -78,10 +82,11 @@ function VotingPageDetail() {
   const handlePrev = () => setCurrentLink((prev) => (prev > 0 ? prev - 1 : links.length - 1));
   const handleNext = () => setCurrentLink((prev) => (prev < links.length - 1 ? prev + 1 : 0));
 
-  // Для примера: название и фото берём из ссылки (заглушка)
   const getPlaceName = (url) => url ? `Место ${links.findIndex(l => l.url === url) + 1}` : '';
   const getPlacePhoto = (url) => url ? 'https://via.placeholder.com/120x80?text=Фото' : '';
 
+  if (loading) return <div style={{padding: 32}}>Загрузка...</div>;
+  if (error) return <div style={{padding: 32, color: 'red'}}>Ошибка: {error}</div>;
   if (!voting) return <div style={{padding: 32}}>Голосование не найдено</div>;
 
   return (
@@ -222,5 +227,12 @@ function VotingPageDetail() {
     </div>
   );
 }
+
+// Моковые участники для отображения справа (оставим как было)
+const mockFriends = [
+  { id: 1, username: 'Иван' },
+  { id: 2, username: 'Мария' },
+  { id: 3, username: 'Петр' },
+];
 
 export default VotingPageDetail;

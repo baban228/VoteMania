@@ -2,36 +2,44 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import VotingCard from '../components/VotingCard';
 
-const STORAGE_KEY = 'votemania_votings';
-
 function VotingPage() {
   const [votings, setVotings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Получаем голосования из localStorage
-    const stored = localStorage.getItem(STORAGE_KEY);
-    const loaded = stored ? JSON.parse(stored) : [];
-    // Сортировка: сначала активные, потом завершённые
-    const now = Date.now();
-    const active = [];
-    const finished = [];
-    for (const v of loaded) {
-      if (v.deadline) {
-        const deadline = new Date(v.deadline).getTime();
-        if (deadline > now) {
-          active.push(v);
-        } else {
-          finished.push(v);
-        }
-      } else {
-        active.push(v);
-      }
-    }
-    setVotings([...active, ...finished]);
-    setLoading(false);
+    fetch('/voting/api/votings/', {
+      credentials: 'include',
+      headers: { 'Accept': 'application/json' },
+    })
+      .then(res => res.ok ? res.json() : Promise.reject(res.statusText))
+      .then(data => {
+        setVotings(data.votings || []);
+        setLoading(false);
+      })
+      .catch(err => {
+        setError(err.toString());
+        setLoading(false);
+      });
   }, []);
+
+  const handleDelete = async (id) => {
+    try {
+      const res = await fetch(`/voting/api/votings/${id}/`, {
+        method: 'DELETE',
+        credentials: 'include',
+        headers: { 'Accept': 'application/json' },
+      });
+      if (res.ok) {
+        setVotings(votings => votings.filter(v => v.id !== id));
+      } else {
+        const data = await res.json();
+        alert(data.error || 'Ошибка удаления');
+      }
+    } catch (e) {
+      alert('Ошибка удаления: ' + e.message);
+    }
+  };
 
   if (loading) {
     return (
@@ -64,11 +72,7 @@ function VotingPage() {
         <div className="row">
           {votings.map(voting => (
             <div className="col-md-6 mb-4" key={voting.id}>
-              <VotingCard voting={voting} onDelete={id => {
-                const updated = votings.filter(v => v.id !== id);
-                setVotings(updated);
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-              }} />
+              <VotingCard voting={voting} onDelete={handleDelete} />
             </div>
           ))}
         </div>
