@@ -75,3 +75,7 @@ def voting_detail(request, voting_id):
         return JsonResponse({'voting': data})
     except Voting.DoesNotExist:
         return JsonResponse({'error': 'Voting not found'}, status=404)
+
+
+def voting_detail_page(request, id):
+    return render(request, "voting/index.html")

@@ -7,6 +7,9 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
 import json
+from django.db import models
+import datetime
+from django.utils import timezone
 
 
 from .models import User, FriendRequest, Friendship
@@ -24,10 +27,21 @@ def user(request):
     # Получаем список исходящих запросов на добавление в друзья
     sent_requests = FriendRequest.objects.filter(from_user=user)
 
+    # Получаем голосования, где пользователь — создатель или участник
+    from voting.models import Voting, VotingParticipant
+    my_votings = Voting.objects.filter(
+        models.Q(creator=user) |
+        models.Q(participants__user=user)
+    ).distinct().order_by('-created_at')
+    my_votings_count = my_votings.count()
+
     context = {
         'friends': friends,
         'friend_requests': friend_requests,
         'sent_requests': sent_requests,
+        'my_votings': my_votings,
+        'my_votings_count': my_votings_count,
+        'now': timezone.now(),
         # ... другие данные профиля ...
     }
     # Убедитесь, что используете правильный путь к шаблону

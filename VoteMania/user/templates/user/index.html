@@ -58,7 +58,7 @@
 
                     <div class="profile-stats">
                         <div class="stat-item">
-                            <div class="stat-number">24</div>
+                            <div class="stat-number">{{ my_votings_count }}</div>
                             <div class="stat-label">Голосований</div>
                         </div>
                         <div class="stat-item">
@@ -107,63 +107,44 @@
                 <div class="tab-pane fade show active" id="votings">
                     <div class="profile-section">
                         <h3 class="section-title">Мои голосования</h3>
-
                         <div class="row">
-                            <div class="col-md-6">
-                                <div class="voting-card">
-                                    <img src="{% static 'images/voting1.jpg' %}" alt="Голосование" class="voting-image w-100">
-                                    <div class="voting-content">
-                                        <h4 class="voting-title">Лучший фильм 2025 года</h4>
-                                        <div class="voting-meta">
-                                            <span><i class="fas fa-users me-1"></i> 42 участника</span>
-                                            <span><i class="fas fa-clock me-1"></i> 3 дня осталось</span>
-                                        </div>
-                                        <p>Голосование за лучший фильм этого года. Участвуют все новинки кинопроката.</p>
-                                        <div class="d-flex justify-content-between">
-                                            <span class="badge badge-custom">Активно</span>
-                                            <div>
-                                                <button class="btn btn-sm btn-outline-custom me-2">
-                                                    <i class="fas fa-share me-1"></i> Поделиться
-                                                </button>
-                                                <button class="btn btn-sm btn-primary-custom">
-                                                    <i class="fas fa-chart-bar me-1"></i> Результаты
-                                                </button>
+                            {% if my_votings %}
+                                {% for voting in my_votings|slice:":2" %}
+                                <div class="col-md-6 mb-4">
+                                    <div class="voting-card">
+                                        <div class="voting-content">
+                                            <h4 class="voting-title">{{ voting.title }}</h4>
+                                            <div class="voting-meta">
+                                                <span><i class="fas fa-users me-1"></i> {{ voting.participants.count }} участника</span>
+                                                <span><i class="fas fa-clock me-1"></i> {{ voting.deadline|date:'d.m.Y H:i' }}</span>
+                                            </div>
+                                            <p>{{ voting.description }}</p>
+                                            <div class="d-flex justify-content-between">
+                                                <div>
+                                                    <a href="/voting/vote/{{ voting.id }}/" class="btn btn-sm btn-primary-custom">
+                                                        <i class="fas fa-chart-bar me-1"></i> Перейти
+                                                    </a>
+                                                </div>
+                                            </div>
+                                            <div class="mt-2">
+                                                {% if voting.deadline > now %}
+                                                    <span class="badge badge-custom">Активно</span>
+                                                {% else %}
+                                                    <span class="badge bg-secondary">Завершено</span>
+                                                {% endif %}
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <div class="voting-card">
-                                    <img src="{% static 'images/voting2.jpg' %}" alt="Голосование" class="voting-image w-100">
-                                    <div class="voting-content">
-                                        <h4 class="voting-title">Куда поехать на выходные?</h4>
-                                        <div class="voting-meta">
-                                            <span><i class="fas fa-users me-1"></i> 18 участников</span>
-                                            <span><i class="fas fa-clock me-1"></i> Завершено</span>
-                                        </div>
-                                        <p>Выбираем место для поездки на ближайшие выходные. Все предложения рассмотрим!</p>
-                                        <div class="d-flex justify-content-between">
-                                            <span class="badge bg-secondary">Завершено</span>
-                                            <div>
-                                                <button class="btn btn-sm btn-outline-custom me-2">
-                                                    <i class="fas fa-share me-1"></i> Поделиться
-                                                </button>
-                                                <button class="btn btn-sm btn-primary-custom">
-                                                    <i class="fas fa-chart-bar me-1"></i> Результаты
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                                {% endfor %}
+                            {% else %}
+                                <div class="col-12 text-center text-muted py-4">У вас пока нет голосований</div>
+                            {% endif %}
                         </div>
-
                         <div class="text-center mt-4">
-                            <button class="btn btn-primary-custom btn-custom" >
+                            <a href="/voting/create/" class="btn btn-primary-custom btn-custom" >
                                 <i class="fas fa-plus-circle me-2"></i>Создать новое голосование
-                            </button>
+                            </a>
                         </div>
                     </div>
                 </div>
