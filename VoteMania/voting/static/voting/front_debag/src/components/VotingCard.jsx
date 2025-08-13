@@ -35,7 +35,7 @@ function isColorLight(hex) {
   return (r*0.299 + g*0.587 + b*0.114) > 180;
 }
 
-function VotingCard({ voting, onDelete }) {
+function VotingCard({ voting, onDelete, user }) {
   const [open, setOpen] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
   const navigate = useNavigate();
@@ -80,6 +80,8 @@ function VotingCard({ voting, onDelete }) {
     navigate(`/vote/${voting.id}`, { state: { gradient } });
   };
 
+  const isCreator = user && voting.creator && (user.username === voting.creator || user.id === voting.creator);
+
   return (
     <>
       <div
@@ -100,6 +102,7 @@ function VotingCard({ voting, onDelete }) {
         }}
       >
         {/* Кнопка удаления */}
+        {isCreator && (
         <button
           onClick={e => { e.stopPropagation(); setShowDelete(true); }}
           title="Удалить голосование"
@@ -118,20 +121,9 @@ function VotingCard({ voting, onDelete }) {
             boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
             cursor: 'pointer',
             zIndex: 10,
-            display: 'block',
-            transition: 'background 0.2s',
-            outline: 'none',
-            borderWidth: 2,
-            borderStyle: 'solid',
-            borderColor: isFinished ? '#e53e3e' : 'transparent',
           }}
-        >
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style={{display:'block',margin:'0 auto'}}>
-            <circle cx="8" cy="8" r="7" stroke="#e53e3e" strokeWidth="2" fill="none"/>
-            <line x1="5" y1="5" x2="11" y2="11" stroke="#e53e3e" strokeWidth="2" strokeLinecap="round"/>
-            <line x1="11" y1="5" x2="5" y2="11" stroke="#e53e3e" strokeWidth="2" strokeLinecap="round"/>
-          </svg>
-        </button>
+        >×</button>
+        )}
         <div className="voting-card-title" style={{color: textColor, textShadow, textDecoration: isFinished ? 'line-through' : 'none', position: 'relative'}}>
           {shortTitle}
           {isFinished && (

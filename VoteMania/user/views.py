@@ -35,6 +35,9 @@ def user(request):
     ).distinct().order_by('-created_at')
     my_votings_count = my_votings.count()
 
+    # Приглашения на голосование, которые пользователь ещё не принял
+    voting_invitations = VotingParticipant.objects.filter(user=user, invited_by_creator=True, accepted=False)
+
     context = {
         'friends': friends,
         'friend_requests': friend_requests,
@@ -42,6 +45,7 @@ def user(request):
         'my_votings': my_votings,
         'my_votings_count': my_votings_count,
         'now': timezone.now(),
+        'voting_invitations': voting_invitations,
         # ... другие данные профиля ...
     }
     # Убедитесь, что используете правильный путь к шаблону

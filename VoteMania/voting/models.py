@@ -12,3 +12,4 @@ class VotingParticipant(models.Model):
     voting = models.ForeignKey(Voting, on_delete=models.CASCADE, related_name='participants')
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     invited_by_creator = models.BooleanField(default=False)
+    accepted = models.BooleanField(default=False)  # Новое поле: принял ли приглашение

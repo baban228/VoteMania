@@ -50,9 +50,9 @@ function App() {
         </header>
         <main className="container" style={{flex: 1}}>
           <Routes>
-            <Route path="/" element={<VotingPage />} />
+            <Route path="/" element={<VotingPage user={user} />} />
             <Route path="/create" element={<CreateVotingPage />} />
-            <Route path="/vote/:id" element={<VotingPageDetail />} />
+            <Route path="/vote/:id" element={<VotingPageDetail user={user} />} />
           </Routes>
         </main>
         <Link to="/create" className="fab-create" title="Создать голосование">

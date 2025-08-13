@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import VotingCard from '../components/VotingCard';
 
-function VotingPage() {
+function VotingPage({ user }) {
   const [votings, setVotings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -41,6 +41,12 @@ function VotingPage() {
     }
   };
 
+  // Разделение голосований
+  const now = new Date();
+  const activeVotings = votings.filter(v => new Date(v.deadline) > now);
+  const finishedVotings = votings.filter(v => new Date(v.deadline) <= now);
+  const sortedVotings = [...activeVotings, ...finishedVotings];
+
   if (loading) {
     return (
       <div className="container py-5">
@@ -68,11 +74,11 @@ function VotingPage() {
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h1 className="h3 fw-bold">Мои голосования</h1>
       </div>
-      {votings.length > 0 ? (
+      {sortedVotings.length > 0 ? (
         <div className="row">
-          {votings.map(voting => (
+          {sortedVotings.map(voting => (
             <div className="col-md-6 mb-4" key={voting.id}>
-              <VotingCard voting={voting} onDelete={handleDelete} />
+              <VotingCard voting={voting} onDelete={handleDelete} user={user} />
             </div>
           ))}
         </div>
