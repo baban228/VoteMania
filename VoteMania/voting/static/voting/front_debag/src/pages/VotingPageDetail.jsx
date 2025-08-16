@@ -29,6 +29,10 @@ function VotingPageDetail({ user }) {
   const [friendsLoading, setFriendsLoading] = useState(false);
   const [friendsError, setFriendsError] = useState(null);
   const [friendSearch, setFriendSearch] = useState('');
+  // Состояние для отслеживания голосов пользователя
+  const [userVotes, setUserVotes] = useState({});
+  // Состояние для общих результатов голосования
+  const [voteResults, setVoteResults] = useState({});
 
   useEffect(() => {
     fetch(`/voting/api/votings/${id}/`, {
@@ -40,6 +44,9 @@ function VotingPageDetail({ user }) {
         setVoting(data.voting || null);
         setLinks(data.voting && data.voting.links ? data.voting.links : []);
         setLoading(false);
+        
+        // Загружаем результаты голосования
+        loadVoteResults();
       })
       .catch(err => {
         setError(err.toString());
@@ -66,6 +73,23 @@ function VotingPageDetail({ user }) {
       });
   }, [id, showAddFriends]);
 
+  // Загрузка результатов голосования
+  const loadVoteResults = async () => {
+    try {
+      const response = await fetch(`/voting/api/votings/${id}/votes/`, {
+        credentials: 'include',
+        headers: { 'Accept': 'application/json' },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setVoteResults(data.results || {});
+        setUserVotes(data.user_votes || {});
+      }
+    } catch (err) {
+      console.error('Ошибка загрузки результатов голосования:', err);
+    }
+  };
+
   const gradient = location.state?.gradient || 'linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%)';
   const mainColor = useMemo(() => getMainColorFromGradient(gradient), [gradient]);
   const isLight = useMemo(() => isColorLight(mainColor), [mainColor]);
@@ -91,23 +115,86 @@ function VotingPageDetail({ user }) {
     }
   }
 
-  const handleAddLink = (e) => {
+  const handleAddLink = async (e) => {
     e.preventDefault();
     if (linkInput.trim()) {
-      setLinks(prev => {
-        const newLinks = [...prev, { url: linkInput.trim() }];
-        setCurrentLink(newLinks.length - 1);
-        return newLinks;
-      });
-      setLinkInput('');
+      try {
+        const response = await fetch(`/voting/api/votings/${id}/links/`, {
+          method: 'POST',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          },
+          body: JSON.stringify({ url: linkInput.trim() })
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          setLinks(prev => {
+            const newLinks = [...prev, { url: linkInput.trim(), id: data.link_id }];
+            setCurrentLink(newLinks.length - 1);
+            return newLinks;
+          });
+          setLinkInput('');
+        } else {
+          const data = await response.json();
+          alert(data.error || 'Ошибка добавления ссылки');
+        }
+      } catch (err) {
+        alert('Ошибка добавления ссылки: ' + err.message);
+      }
     }
   };
 
   const handlePrev = () => setCurrentLink((prev) => (prev > 0 ? prev - 1 : links.length - 1));
   const handleNext = () => setCurrentLink((prev) => (prev < links.length - 1 ? prev + 1 : 0));
 
-  const getPlaceName = (url) => url ? `Место ${links.findIndex(l => l.url === url) + 1}` : '';
-  const getPlacePhoto = (url) => url ? 'https://via.placeholder.com/120x80?text=Фото' : '';
+  const getPlaceName = (index) => {
+    return `Место ${index + 1}`;
+  };
+
+  // Функция для голосования
+  const handleVote = async (linkIndex, voteType) => {
+    const linkId = links[linkIndex]?.id;
+    if (!linkId) return;
+
+    try {
+      const response = await fetch(`/voting/api/votings/${id}/vote/`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify({ 
+          link_id: linkId, 
+          vote: voteType // 'for' или 'against'
+        })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        
+        // Обновляем результаты голосования
+        setVoteResults(prev => ({
+          ...prev,
+          [linkId]: data.results
+        }));
+        
+        // Обновляем голос пользователя
+        setUserVotes(prev => ({
+          ...prev,
+          [linkId]: voteType
+        }));
+      } else {
+        const data = await response.json();
+        alert(data.error || 'Ошибка голосования');
+      }
+    } catch (err) {
+      alert('Ошибка голосования: ' + err.message);
+    }
+  };
 
   // Добавить друга в участники
   const handleInviteFriend = async (userId) => {
@@ -157,6 +244,11 @@ function VotingPageDetail({ user }) {
   const creatorId = friends.find(f => f.is_creator)?.id;
   const isCreator = user && creatorId && user.id === creatorId;
 
+  // Получаем результаты для текущего места
+  const currentLinkId = links[currentLink]?.id;
+  const currentResults = currentLinkId ? voteResults[currentLinkId] || { for: 0, against: 0 } : { for: 0, against: 0 };
+  const userVote = currentLinkId ? userVotes[currentLinkId] : null;
+
   return (
     <div
       style={{
@@ -200,12 +292,22 @@ function VotingPageDetail({ user }) {
           {links.length > 0 && (
             <div style={{marginTop: 18, background: isLight ? 'rgba(255,255,255,0.92)' : 'rgba(0,0,0,0.18)', borderRadius: 10, boxShadow: '0 2px 8px rgba(100,116,139,0.06)', padding: '10px 8px', display: 'flex', flexDirection: 'column', gap: 8}}>
               <div style={{fontWeight: 600, color: textColor, fontSize: 15, marginBottom: 4, textShadow}}>Добавленные места:</div>
-              {links.map((l, i) => (
-                <div key={i} style={{display: 'flex', alignItems: 'center', gap: 8, background: currentLink === i ? (isLight ? 'var(--accent)' : 'rgba(255,255,255,0.18)') : (isLight ? '#f8fafc' : 'rgba(0,0,0,0.10)'), borderRadius: 6, padding: '4px 8px', cursor: 'pointer', transition: 'background 0.2s'}} onClick={() => setCurrentLink(i)}>
-                  <span style={{fontWeight: 500, color: currentLink === i ? '#fff' : textColor, fontSize: 14, textShadow}}>{getPlaceName(l.url)}</span>
-                  <a href={l.url} target="_blank" rel="noopener noreferrer" style={{marginLeft: 'auto', color: currentLink === i ? '#fff' : textColor, fontSize: 13, textDecoration: 'underline', textShadow}}>Открыть</a>
-                </div>
-              ))}
+              {links.map((l, i) => {
+                const linkResults = l.id ? voteResults[l.id] || { for: 0, against: 0 } : { for: 0, against: 0 };
+                const totalVotes = linkResults.for + linkResults.against;
+                
+                return (
+                  <div key={i} style={{display: 'flex', alignItems: 'center', gap: 8, background: currentLink === i ? (isLight ? 'var(--accent)' : 'rgba(255,255,255,0.18)') : (isLight ? '#f8fafc' : 'rgba(0,0,0,0.10)'), borderRadius: 6, padding: '4px 8px', cursor: 'pointer', transition: 'background 0.2s'}} onClick={() => setCurrentLink(i)}>
+                    <span style={{fontWeight: 500, color: currentLink === i ? '#fff' : textColor, fontSize: 14, textShadow}}>{getPlaceName(i)}</span>
+                    {totalVotes > 0 && (
+                      <span style={{fontSize: 12, color: isLight ? '#666' : '#ccc', marginLeft: 'auto'}}>
+                        {linkResults.for} / {linkResults.against}
+                      </span>
+                    )}
+                    <a href={l.url} target="_blank" rel="noopener noreferrer" style={{color: currentLink === i ? '#fff' : textColor, fontSize: 13, textDecoration: 'underline', textShadow}}>Открыть</a>
+                  </div>
+                );
+              })}
             </div>
           )}
         </div>
@@ -233,16 +335,89 @@ function VotingPageDetail({ user }) {
           }}>
             {links.length > 0 ? (
               <>
-                <div style={{fontWeight: 700, fontSize: 22, color: textColor, marginBottom: 10, textAlign: 'center', letterSpacing: 0.5, textShadow}}>{getPlaceName(links[currentLink]?.url)}</div>
-                <img src={getPlacePhoto(links[currentLink]?.url)} alt="Фото места" style={{width: 160, height: 100, objectFit: 'cover', borderRadius: 10, marginBottom: 16, background: '#e2e8f0', boxShadow: '0 2px 8px rgba(100,116,139,0.10)'}} />
-                <div style={{display: 'flex', gap: 22, marginBottom: 10}}>
-                  <button style={{background: isLight ? '#38a169' : 'rgba(56,161,105,0.85)', color: '#fff', border: 'none', borderRadius: 10, padding: '10px 28px', fontWeight: 600, fontSize: 18, cursor: 'pointer', boxShadow: '0 2px 8px rgba(56,161,105,0.10)', textShadow}}>За</button>
-                  <button style={{background: isLight ? '#e53e3e' : 'rgba(229,62,62,0.85)', color: '#fff', border: 'none', borderRadius: 10, padding: '10px 28px', fontWeight: 600, fontSize: 18, cursor: 'pointer', boxShadow: '0 2px 8px rgba(229,62,62,0.10)', textShadow}}>Против</button>
+                <div style={{fontWeight: 700, fontSize: 22, color: textColor, marginBottom: 10, textAlign: 'center', letterSpacing: 0.5, textShadow}}>
+                  {getPlaceName(currentLink)}
+                </div>
+                <div style={{marginBottom: 16, textAlign: 'center'}}>
+                  <a 
+                    href={links[currentLink]?.url} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    style={{
+                      display: 'inline-block',
+                      background: isLight ? '#3182ce' : 'rgba(49, 130, 206, 0.85)',
+                      color: '#fff',
+                      border: 'none',
+                      borderRadius: 10,
+                      padding: '10px 20px',
+                      fontWeight: 600,
+                      fontSize: 14,
+                      cursor: 'pointer',
+                      boxShadow: '0 2px 8px rgba(49, 130, 206, 0.2)',
+                      textDecoration: 'none',
+                    }}
+                  >
+                    Открыть ссылку
+                  </a>
+                </div>
+                <div style={{display: 'flex', gap: 22, marginBottom: 10, alignItems: 'center'}}>
+                  <div style={{textAlign: 'center'}}>
+                    <button 
+                      onClick={() => handleVote(currentLink, 'for')}
+                      disabled={userVote === 'for'}
+                      style={{
+                        background: userVote === 'for' ? (isLight ? 'rgba(56,161,105,0.3)' : 'rgba(56,161,105,0.3)') : (isLight ? '#38a169' : 'rgba(56,161,105,0.85)'),
+                        color: '#fff', 
+                        border: 'none', 
+                        borderRadius: 10, 
+                        padding: '10px 28px', 
+                        fontWeight: 600, 
+                        fontSize: 18, 
+                        cursor: userVote === 'for' ? 'default' : 'pointer', 
+                        boxShadow: '0 2px 8px rgba(56,161,105,0.10)', 
+                        textShadow,
+                        opacity: userVote === 'for' ? 0.7 : 1,
+                        transform: userVote === 'for' ? 'scale(0.95)' : 'scale(1)',
+                        transition: 'all 0.2s'
+                      }}
+                    >
+                      За
+                    </button>
+                    <div style={{fontSize: 14, fontWeight: 600, marginTop: 4, color: textColor}}>
+                      {currentResults.for}
+                    </div>
+                  </div>
+                  <div style={{textAlign: 'center'}}>
+                    <button 
+                      onClick={() => handleVote(currentLink, 'against')}
+                      disabled={userVote === 'against'}
+                      style={{
+                        background: userVote === 'against' ? (isLight ? 'rgba(229,62,62,0.3)' : 'rgba(229,62,62,0.3)') : (isLight ? '#e53e3e' : 'rgba(229,62,62,0.85)'),
+                        color: '#fff', 
+                        border: 'none', 
+                        borderRadius: 10, 
+                        padding: '10px 28px', 
+                        fontWeight: 600, 
+                        fontSize: 18, 
+                        cursor: userVote === 'against' ? 'default' : 'pointer', 
+                        boxShadow: '0 2px 8px rgba(229,62,62,0.10)', 
+                        textShadow,
+                        opacity: userVote === 'against' ? 0.7 : 1,
+                        transform: userVote === 'against' ? 'scale(0.95)' : 'scale(1)',
+                        transition: 'all 0.2s'
+                      }}
+                    >
+                      Против
+                    </button>
+                    <div style={{fontSize: 14, fontWeight: 600, marginTop: 4, color: textColor}}>
+                      {currentResults.against}
+                    </div>
+                  </div>
                 </div>
                 {links.length > 1 && (
                   <div>
-                    <button onClick={handlePrev} style={{position: 'absolute', left: 8, top: '50%', transform: 'translateY(-50%)', background: isLight ? '#fff' : 'rgba(0,0,0,0.22)', border: '1.5px solid #e2e8f0', borderRadius: '50%', width: 36, height: 36, fontSize: 20, cursor: 'pointer', boxShadow: '0 2px 8px rgba(100,116,139,0.10)', color: textColor, textShadow}}>&lt;</button>
-                    <button onClick={handleNext} style={{position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)', background: isLight ? '#fff' : 'rgba(0,0,0,0.22)', border: '1.5px solid #e2e8f0', borderRadius: '50%', width: 36, height: 36, fontSize: 20, cursor: 'pointer', boxShadow: '0 2px 8px rgba(100,116,139,0.10)', color: textColor, textShadow}}>&gt;</button>
+                    <button onClick={handlePrev} style={{position: 'absolute', left: 8, top: '50%', transform: 'translateY(-50%)', background: isLight ? '#fff' : 'rgba(0,0,0,0.22)', border: '1.5px solid #e2e8f0', borderRadius: '50%', width: 36, height: 36, fontSize: 20, cursor: 'pointer', boxShadow: '0 2px 8px rgba(100,116,139,0.10)', color: textColor, textShadow}}>`{'<'}`</button>
+                    <button onClick={handleNext} style={{position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)', background: isLight ? '#fff' : 'rgba(0,0,0,0.22)', border: '1.5px solid #e2e8f0', borderRadius: '50%', width: 36, height: 36, fontSize: 20, cursor: 'pointer', boxShadow: '0 2px 8px rgba(100,116,139,0.10)', color: textColor, textShadow}}>`{'>'}`</button>
                   </div>
                 )}
               </>
