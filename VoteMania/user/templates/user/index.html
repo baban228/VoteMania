@@ -1,4 +1,5 @@
 {% load static %}
+{% load date_extras %}
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -261,50 +262,36 @@
                         <h3 class="section-title">Последняя активность</h3>
 
                         <div class="list-group">
+                            {% for activity in activities %}
                             <div class="list-group-item border-0 mb-3" style="background: white; border-radius: 15px; box-shadow: 0 3px 10px rgba(0,0,0,0.08);">
                                 <div class="d-flex">
                                     <div class="me-3">
-                                        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
-                                            <i class="fas fa-poll"></i>
+                                        <div class="{% if activity.activity_type == 'voting_created' %}bg-primary{% elif activity.activity_type == 'voted' %}bg-success{% elif activity.activity_type == 'friend_added' %}bg-info{% elif activity.activity_type == 'voting_invitation' %}bg-warning{% else %}bg-secondary{% endif %} text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                            {% if activity.activity_type == 'voting_created' %}
+                                                <i class="fas fa-poll"></i>
+                                            {% elif activity.activity_type == 'voted' %}
+                                                <i class="fas fa-vote-yea"></i>
+                                            {% elif activity.activity_type == 'friend_added' %}
+                                                <i class="fas fa-user-plus"></i>
+                                            {% elif activity.activity_type == 'voting_invitation' %}
+                                                <i class="fas fa-user-friends"></i>
+                                            {% else %}
+                                                <i class="fas fa-bell"></i>
+                                            {% endif %}
                                         </div>
                                     </div>
                                     <div class="flex-grow-1">
-                                        <h5 class="mb-1">Создано голосование</h5>
-                                        <p class="mb-1">Вы создали голосование "Лучший фильм 2025 года"</p>
-                                        <small class="text-muted">2 часа назад</small>
+                                        <h5 class="mb-1">{{ activity.get_activity_type_display }}</h5>
+                                        <p class="mb-1">{{ activity.description }}</p>
+                                        <small class="text-muted">{{ activity.created_at|timesince }} назад</small>
                                     </div>
                                 </div>
                             </div>
-
-                            <div class="list-group-item border-0 mb-3" style="background: white; border-radius: 15px; box-shadow: 0 3px 10px rgba(0,0,0,0.08);">
-                                <div class="d-flex">
-                                    <div class="me-3">
-                                        <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
-                                            <i class="fas fa-vote-yea"></i>
-                                        </div>
-                                    </div>
-                                    <div class="flex-grow-1">
-                                        <h5 class="mb-1">Проголосовали</h5>
-                                        <p class="mb-1">Вы проголосовали в голосовании "Куда поехать на выходные?"</p>
-                                        <small class="text-muted">5 часов назад</small>
-                                    </div>
-                                </div>
+                            {% empty %}
+                            <div class="text-center py-4">
+                                <p class="text-muted">Пока нет активности</p>
                             </div>
-
-                            <div class="list-group-item border-0 mb-3" style="background: white; border-radius: 15px; box-shadow: 0 3px 10px rgba(0,0,0,0.08);">
-                                <div class="d-flex">
-                                    <div class="me-3">
-                                        <div class="bg-info text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
-                                            <i class="fas fa-user-plus"></i>
-                                        </div>
-                                    </div>
-                                    <div class="flex-grow-1">
-                                        <h5 class="mb-1">Новый друг</h5>
-                                        <p class="mb-1">Александр Петров стал вашим другом</p>
-                                        <small class="text-muted">1 день назад</small>
-                                    </div>
-                                </div>
-                            </div>
+                            {% endfor %}
 
                             {% for invitation in voting_invitations %}
                             <div class="list-group-item border-0 mb-3" style="background: white; border-radius: 15px; box-shadow: 0 3px 10px rgba(0,0,0,0.08);">
