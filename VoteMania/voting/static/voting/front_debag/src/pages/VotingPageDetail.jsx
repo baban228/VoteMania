@@ -104,7 +104,7 @@ function VotingPageDetail({ user }) {
   let timeLeft = null;
   if (voting && voting.deadline) {
     const deadline = new Date(voting.deadline).getTime();
-    const diff = deadline - now;
+    const diff = deadline - now - 3600000 + 60000;
     if (diff > 0) {
       const hours = Math.floor(diff / 1000 / 60 / 60);
       const minutes = Math.floor((diff / 1000 / 60) % 60);

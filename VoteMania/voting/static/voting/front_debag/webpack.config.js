@@ -13,7 +13,7 @@ module.exports = (env, argv) => {
     // Куда и как собирать бандлы
     output: {
       path: path.resolve(__dirname, '../dist'), // Выходной путь
-      filename: isProduction ? '[name].[contenthash].js' : '[name].js', // Имя файла
+      filename: '[name].js', // Имя файла
       clean: true, // Очищает выходную директорию перед каждой сборкой
     },
 
